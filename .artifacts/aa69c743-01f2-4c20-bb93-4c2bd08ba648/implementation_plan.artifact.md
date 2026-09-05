@@ -1,66 +1,62 @@
-# Implementation Plan - Ultra-Professional App Suite
+# Implementation Plan - Advanced LinkedIn Job Tailor
 
-This plan expands the previous goal of making the app "more professional" by adding a high-end onboarding experience, advanced settings, and deeper monetization/legal components.
+This plan introduces a high-end "Job Tailor" feature. Users can upload their official LinkedIn data export (ZIP file) and provide a job description. The AI will then synthesize a resume that perfectly aligns their professional history with that specific role.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Onboarding Flow**: This will be shown on the first launch (mocked using `SharedPreferences`). It will use professional illustrations (placeholders) and copy to set a high-quality tone.
+> **Data Privacy**: Processing a LinkedIn ZIP file involves reading CSV data (Positions, Skills, etc.) locally on the device. I will ensure this data is only sent to the AI for processing and not stored permanently on any server other than your Firebase (if enabled).
 
 > [!NOTE]
-> **Advanced Export**: I will add a "Settings" gear to the Preview screen allowing users to toggle between **A4** and **US Letter** formats, a must-have for international professional use.
+> **LinkedIn ZIP Format**: The feature assumes the standard ZIP structure provided by LinkedIn's "Get a copy of your data" tool. If LinkedIn changes their export format, the CSV parsing logic may need updates.
 
 ## Proposed Changes
 
-### 1. High-End Onboarding
-Creating a "wow" factor for new users.
+### 1. New Dependencies
+Adding tools for file picking and data extraction.
 
-#### [NEW] [onboarding_screen.dart](file:///E:/resume_builder_app/lib/screens/onboarding/onboarding_screen.dart)
-- A 3-page carousel explaining: 1. AI-Powered Resume Builder, 2. LinkedIn Sync, 3. Premium Templates & Export.
-- Seamless transition to the Signup/Login flow.
-
----
-
-### 2. Monetization & Premium Strategy
-Showing "scale" and business readiness.
-
-#### [NEW] [premium_upsell_screen.dart](file:///E:/resume_builder_app/lib/screens/premium/premium_upsell_screen.dart)
-- A sleek, dark-themed comparison table: "Free" vs "Pro".
-- Highlights: Unlimited AI generations, All Premium Templates, Priority Support.
-
-#### [MODIFY] [home_screen.dart](file:///E:/resume_builder_app/lib/screens/home/home_screen.dart)
-- Add a "Upgrade to Pro" badge/banner in the user profile area.
+#### [MODIFY] [pubspec.yaml](file:///E:/resume_builder_app/pubspec.yaml)
+- Add `file_picker: ^8.1.2`
+- Add `archive: ^3.6.1`
+- Add `csv: ^6.0.0`
 
 ---
 
-### 3. Support, Legal & Feedback
-Standard "Store-Ready" requirements.
+### 2. Enhanced Data Extraction
+Processing the LinkedIn ZIP file.
 
-#### [NEW] [legal_content_screen.dart](file:///E:/resume_builder_app/lib/screens/profile/legal_content_screen.dart)
-#### [NEW] [feedback_screen.dart](file:///E:/resume_builder_app/lib/screens/profile/feedback_screen.dart)
-- Functional UI for Privacy Policy, Terms of Service, and a Support/Feedback form.
-
-#### [MODIFY] [profile_screen.dart](file:///E:/resume_builder_app/lib/screens/profile/profile_screen.dart)
-- Add "Delete Account" flow (with confirmation dialog).
-- Add "Manual Theme Toggle" (Light/Dark/System).
-- Add "App Version" and "Share App" features.
+#### [MODIFY] [linkedin_import_service.dart](file:///E:/resume_builder_app/lib/services/linkedin_import_service.dart)
+- Implement `extractDataFromZip(PlatformFile file)`:
+    - Decompress the ZIP.
+    - Locate and parse `Profile.csv`, `Positions.csv`, `Skills.csv`, and `Education.csv`.
+    - Return a combined structured representation of the user's history.
 
 ---
 
-### 4. Advanced Resume Controls
-Small details that signal a "Serious" app.
+### 3. Tailored AI Generation
+Intelligent synthesis of resume + job description.
 
-#### [MODIFY] [resume_preview_screen.dart](file:///E:/resume_builder_app/lib/screens/templates/resume_preview_screen.dart)
-- Add an "Export Options" modal to select PDF Paper Size (A4/Letter).
+#### [MODIFY] [ai_service.dart](file:///E:/resume_builder_app/lib/services/ai_service.dart)
+- Add `generateTailoredResume({required String sourceData, required String jobDescription})`:
+    - A specialized prompt that instructs Gemini to select the most relevant experiences from the `sourceData` and rewrite them to match the `jobDescription`.
 
-#### [MODIFY] [resume_model.dart](file:///E:/resume_builder_app/lib/models/resume_model.dart)
-- Ensure `portfolioUrl` is fully integrated into the data flow.
+---
+
+### 4. Advanced Import UI
+A multi-step tailored flow.
+
+#### [NEW] [advanced_import_screen.dart](file:///E:/resume_builder_app/lib/screens/linkedin/advanced_import_screen.dart)
+- **Step 1**: File picker for the LinkedIn ZIP.
+- **Step 2**: Text area for the Job Description.
+- **Step 3**: "Generate Tailored Resume" button with a professional loading state.
+
+#### [MODIFY] [linkedin_import_screen.dart](file:///E:/resume_builder_app/lib/screens/linkedin/linkedin_import_screen.dart)
+- Add a new "Advanced Job Tailor" section at the bottom to trigger this flow.
 
 ## Verification Plan
 
 ### Manual Verification
-1. **Onboarding**: Restart app (or clear storage) and verify the onboarding carousel appears first.
-2. **Theme Toggle**: Manually switch between Light/Dark in Settings and verify immediate UI update.
-3. **Legal/Feedback**: Navigate through all Profile tiles to ensure no broken screens.
-4. **Premium UI**: Verify the "Pro" plan landing page looks modern and professional.
-5. **Account Deletion**: Verify the warning dialog appears before the "Mock Delete" happens.
+1. **ZIP Selection**: Verify the file picker filters for `.zip` files correctly.
+2. **Parsing Integrity**: (Mock Mode) Verify that the app handles the "missing file" case gracefully if the ZIP is invalid.
+3. **AI Synthesis**: Input a software job description and a ZIP containing diverse data; verify the AI-generated resume prioritizes the relevant software skills.
+4. **Mock Path**: Verify the "Mock" path in `AdvancedImportScreen` returns a realistic tailored resume instantly.

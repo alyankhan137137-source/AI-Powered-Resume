@@ -26,8 +26,8 @@ class AppScaffold extends StatelessWidget {
       appBar: appBar,
       body: Stack(
         children: [
-          Container(decoration: AppTheme.mainBackground),
-          Container(decoration: AppTheme.auraGradient),
+          IgnorePointer(child: Container(decoration: AppTheme.mainBackground)),
+          IgnorePointer(child: Container(decoration: AppTheme.auraGradient)),
           SafeArea(
             child: Padding(
               padding: padding ?? EdgeInsets.zero,

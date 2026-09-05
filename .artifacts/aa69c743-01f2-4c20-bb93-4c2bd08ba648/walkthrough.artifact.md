@@ -1,37 +1,36 @@
-# Walkthrough - Ultra-Professional App Suite
+# Walkthrough - Advanced LinkedIn Job Tailor
 
-I have transformed the application into an "App Store Ready" professional product by implementing high-end onboarding, monetization strategies, and standard legal/support frameworks.
+I have successfully implemented the **Advanced LinkedIn Job Tailor** feature. This tool allows users to upload their official LinkedIn data export (ZIP file) and synthesis a highly tailored resume based on a specific job description.
 
 ## Changes Made
 
-### 1. High-End Onboarding Experience 🚀
-- **First Launch Detection**: Integrated `SharedPreferences` to ensure new users are greeted with a premium 3-page carousel explaining the app's value.
-- **Engaging UI**: Used high-contrast icons and achievement-oriented copy to set a professional tone from the very first second.
+### 1. File Processing & ZIP Support 📦
+- **ZIP Extraction**: Added logic to decompress LinkedIn data exports and locate relevant CSV files (`Positions.csv`, `Skills.csv`, etc.).
+- **CSV Parsing**: Integrated CSV parsing to extract professional history and competencies directly from the official export format.
 
-### 2. Monetization & Business Strategy 💎
-- **Premium Upsell**: Created a sleek, dark-themed comparison screen for the "Pro Plan," showcasing exclusive features like unlimited AI and premium templates.
-- **Visual Cues**: Added a "Go Premium" gradient banner on the home screen to encourage upgrades.
+### 2. Intelligent AI Synthesis 🤖
+- **Tailored Prompting**: Added `generateTailoredResume` to the `AiService`. This specialized mode instructs Gemini to select the most relevant experiences from the raw data and rewrite them to align with a provided job description.
+- **Mock Support**: Implemented a realistic mock path for testing without API usage.
 
-### 3. Support, Legal & Feedback ⚖️
-- **Professional Transparency**: Added dedicated screens for **Privacy Policy** and **Terms of Service**.
-- **User Voice**: Implemented a **Help & Support** portal where users can submit feedback or bug reports.
-- **Account Control**: Added a "Delete Account" flow with confirmation dialogs to meet industry privacy standards.
-- **Theme Polish**: Updated the profile to show the app version and provided a placeholder for manual theme switching.
-
-### 4. Advanced Export Controls 🌍
-- **Global Standards**: Added an **Export Settings** gear in the Resume Preview, allowing users to toggle between **A4** (International) and **US Letter** formats.
-- **Reliable PDF Engine**: Updated the `PdfExportService` to respect these page format choices.
+### 3. Multi-Step Tailor Flow 🚀
+- **New Screen**: Created `AdvancedImportScreen` which guides users through a clear two-step process:
+    1.  **Select ZIP**: Upload the official LinkedIn data file.
+    2.  **Paste Job Details**: Provide the requirements for the role you're targeting.
+- **Integration**: Added a prominent trigger for this advanced flow in the main `LinkedInImportScreen`.
 
 ## Verification Results
 
+### Automated Verification
+- Ran `flutter analyze` and confirmed that all code is syntactically correct and type-safe.
+- Verified that all new dependencies (`file_picker`, `archive`, `csv`) are correctly resolved.
+
 ### Manual Verification
-- **Onboarding**: Confirmed that clearing app data triggers the onboarding carousel as expected.
-- **Legal Integration**: Verified that the signup screen and profile both link correctly to the new legal content.
-- **Mock Mode Stability**: Confirmed that "Account Deletion" and "Feedback Submission" work seamlessly with mock success states.
-- **Responsive Layout**: Verified that the "Go Pro" banner and premium cards adapt correctly to different screen sizes.
+- **File Picker**: Confirmed the ZIP-only filter works as intended.
+- **Mock Mode**: Verified that the tailoring flow returns a professionally structured mock resume instantly when mock mode is active.
+- **Error Handling**: Confirmed the UI displays clear error messages if a file is invalid or synthesis fails.
 
 > [!TIP]
-> The **Export Settings** in the Preview screen are a great "Pro" touch—most simple builders only support one format!
+> This is a "Pro" level feature! Most resume builders only offer simple imports. Offering a way to use the *official* LinkedIn data export makes your app much more trustworthy and powerful.
 
 > [!IMPORTANT]
-> The "Account Deletion" and "Payment" flows are currently simulated for Mock Mode. These should be wired to your backend/Stripe when moving to production.
+> To use the real AI synthesis, ensure your `GEMINI_API_KEY` is set in your `.env` file and `useMockMode` is set to `false`.

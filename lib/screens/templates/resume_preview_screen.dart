@@ -24,6 +24,7 @@ class _ResumePreviewScreenState extends State<ResumePreviewScreen> {
   List<String>? _reviewNotes;
   bool _reviewLoading = false;
   bool _isLetter = true; // Default to US Letter
+  bool _downloading = false;
 
   Future<void> _export() async {
     setState(() => _exporting = true);
@@ -39,6 +40,22 @@ class _ResumePreviewScreenState extends State<ResumePreviewScreen> {
       }
     } finally {
       if (mounted) setState(() => _exporting = false);
+    }
+  }
+
+  Future<void> _download() async {
+    setState(() => _downloading = true);
+    try {
+      final resume = context.read<ResumeProvider>().draft!;
+      await _pdfService.downloadPdf(resume, isLetter: _isLetter);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Download failed. Please try again.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _downloading = false);
     }
   }
 
@@ -262,11 +279,26 @@ class _ResumePreviewScreenState extends State<ResumePreviewScreen> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
-          child: PrimaryButton(
-            label: 'Export as PDF',
-            icon: Icons.picture_as_pdf_outlined,
-            isLoading: _exporting,
-            onPressed: _export,
+          child: Row(
+            children: [
+              Expanded(
+                child: PrimaryButton(
+                  label: 'Share',
+                  icon: Icons.share_outlined,
+                  isLoading: _exporting,
+                  onPressed: _export,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: PrimaryButton(
+                  label: 'Download',
+                  icon: Icons.file_download_outlined,
+                  isLoading: _downloading,
+                  onPressed: _download,
+                ),
+              ),
+            ],
           ),
         ),
       ),

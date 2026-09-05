@@ -12,6 +12,7 @@ import '../../core/theme/app_typography.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/config/app_config.dart';
 import '../builder/builder_flow_screen.dart';
+import 'advanced_import_screen.dart';
 
 /// Two import paths: OAuth (requires your own backend + approved LinkedIn
 /// app, see LinkedInImportService docs) or pasting exported profile text,
@@ -152,6 +153,21 @@ class _LinkedInImportScreenState extends State<LinkedInImportScreen> {
                         },
                 );
               },
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            Text('Advanced Job Tailor', style: AppTypography.bodyStrong),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              'Upload your official LinkedIn ZIP export and a job description. AI will synthesis a tailored resume for you.',
+              style: AppTypography.bodyMuted,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            PrimaryButton(
+              label: 'Use ZIP Export & Job Post',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdvancedImportScreen()),
+              ),
             ),
           ],
         ),

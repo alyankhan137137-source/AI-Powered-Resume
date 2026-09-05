@@ -1,23 +1,14 @@
-# Task List - Ultra-Professional App Suite
+# Task List - Advanced LinkedIn Job Tailor
 
-- `[x]` **High-End Onboarding**
-    - `[x]` Create `OnboardingScreen` with 3-page carousel
-    - `[x]` Integrate `SharedPreferences` for first-launch detection
-    - `[x]` Wire `OnboardingScreen` as the initial route
-- `[x]` **Monetization & Premium Strategy**
-    - `[x]` Create `PremiumUpsellScreen` (Sleek dark theme comparison)
-    - `[x]` Add "Upgrade to Pro" banner to `HomeScreen`
-- `[x]` **Support, Legal & Feedback**
-    - `[x]` Create `LegalContentScreen` for Policies & Terms
-    - `[x]` Create `FeedbackScreen` with professional form
-    - `[x]` Update `ProfileScreen`:
-        - `[x]` Add Theme Toggle (Light/Dark/System)
-        - `[x]` Add Delete Account flow with confirmation
-        - `[x]` Add Version number and Support links
-- `[x]` **Advanced Resume Controls**
-    - `[x]` Update `ResumePreviewScreen` with "Export Settings"
-    - `[x]` Update `PdfExportService` to support **A4** vs **US Letter**
-- `[x]` **Verification**
-    - `[x]` Verify onboarding flow on clean install
-    - `[x]` Verify theme switching across all screens
-    - `[x]` Verify PDF layout for different paper sizes
+- `[x]` Setup Dependencies
+    - `[x]` Add `file_picker`, `archive`, and `csv` to `pubspec.yaml`
+    - `[x]` Run `flutter pub get`
+- `[x]` Enhanced Service Layer
+    - `[x]` Implement ZIP & CSV parsing in `LinkedInImportService`
+    - `[x]` Add `generateTailoredResume` to `AiService`
+- `[x]` Advanced Import UI
+    - `[x]` Create `AdvancedImportScreen` with multi-step flow
+    - `[x]` Add trigger in `LinkedInImportScreen`
+- `[x]` Verification
+    - `[x]` Verify ZIP parsing with mock files
+    - `[x]` Verify AI synthesis logic

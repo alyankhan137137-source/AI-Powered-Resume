@@ -37,6 +37,31 @@ class PdfExportService {
     return file;
   }
 
+  /// Triggers the system print/save dialog. On Web, this downloads the PDF.
+  /// On Mobile, it opens the "Save as PDF" / "Print" interface.
+  Future<void> downloadPdf(Resume resume, {bool isLetter = true}) async {
+    final doc = pw.Document();
+    final accent = resume.customAccentColorHex != null
+        ? PdfColor.fromHex(resume.customAccentColorHex!)
+        : _accentFor(resume.templateId);
+
+    doc.addPage(
+      pw.Page(
+        pageFormat: isLetter ? PdfPageFormat.letter : PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.symmetric(horizontal: 40, vertical: 36),
+        build: (context) => resume.templateId == ResumeTemplateId.modern
+            ? _buildModernLayout(resume, accent)
+            : _buildStandardLayout(resume, accent),
+      ),
+    );
+
+    final safeName = resume.fullName.isEmpty ? 'resume' : resume.fullName.replaceAll(' ', '_');
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => doc.save(),
+      name: '${safeName}_resume.pdf',
+    );
+  }
+
   Future<void> shareOrPrint(File file) async {
     await Printing.sharePdf(bytes: await file.readAsBytes(), filename: file.path.split('/').last);
   }
@@ -61,7 +86,7 @@ class PdfExportService {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(r.fullName, style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+        pw.Text(r.fullName, style: const pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 4),
         pw.Text(
           [r.email, r.phone, r.location].where((s) => s.isNotEmpty).join('  ·  '),
@@ -121,7 +146,7 @@ class PdfExportService {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                          pw.Text(e.degree, style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
+                          pw.Text(e.degree, style: const pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
                           pw.Text(e.institution, style: const pw.TextStyle(fontSize: 8.5)),
                         ],
                       ),

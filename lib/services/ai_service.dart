@@ -267,4 +267,48 @@ class AiService {
       return null;
     }
   }
+
+  /// Synthesizes a tailored resume from raw source data (e.g. CSVs) and a job description.
+  Future<Map<String, dynamic>?> generateTailoredResume({
+    required Map<String, String> sourceData,
+    required String jobDescription,
+  }) async {
+    if (AppConfig.useMockMode) {
+      await Future.delayed(const Duration(seconds: 1));
+      return {
+        'fullName': 'Alyan Khan',
+        'email': AppConfig.mockEmail,
+        'targetJobTitle': 'Senior Software Engineer',
+        'summary': 'Tailored summary for the provided job description...',
+        'experience': [
+          {
+            'jobTitle': 'Senior Engineer',
+            'company': 'Tech Corp',
+            'bullets': ['Tailored bullet point 1', 'Tailored bullet point 2'],
+            'startDate': '2021-01-01T00:00:00.000',
+          }
+        ],
+        'skills': [{'name': 'Flutter'}, {'name': 'Cloud Architecture'}],
+        'templateId': 'modern',
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    final content = await _complete(
+      'You are an expert resume writer. Synthesize a professional resume from '
+      'the provided source data (raw CSV content) and tailor it to the specific '
+      'job description. Select only the most relevant experiences and rewrite '
+      'bullet points to align with the job requirements. Return ONLY a JSON '
+      'object matching the Resume model schema.',
+      'Source Data:\n${sourceData.toString()}\n\nJob Description:\n$jobDescription',
+      isJson: true,
+    );
+    try {
+      return jsonDecode(content) as Map<String, dynamic>;
+    } catch (e) {
+      debugPrint('AI Tailor Error: $e');
+      return null;
+    }
+  }
 }

@@ -225,6 +225,24 @@ class ResumeProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> generateTailoredResume(Map<String, String> sourceData, String jobDescription) async {
+    _aiStatus = AiTaskStatus.loading;
+    notifyListeners();
+    try {
+      final data = await _ai.generateTailoredResume(sourceData: sourceData, jobDescription: jobDescription);
+      if (data != null) {
+        _draft = Resume.fromJson(data);
+        _aiStatus = AiTaskStatus.success;
+      } else {
+        throw Exception('Tailoring failed');
+      }
+    } catch (e) {
+      _aiError = 'Could not generate a tailored resume. Please try again.';
+      _aiStatus = AiTaskStatus.error;
+    }
+    notifyListeners();
+  }
+
   Future<void> saveDraft(String uid) async {
     if (_draft == null) return;
     await _firestore.saveResume(uid, _draft!);

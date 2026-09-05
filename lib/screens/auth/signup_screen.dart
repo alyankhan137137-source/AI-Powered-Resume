@@ -6,7 +6,6 @@ import '../../widgets/auth/custom_text_field.dart';
 import '../../widgets/auth/auth_primary_button.dart';
 import '../../widgets/auth/social_auth_button.dart';
 import '../../widgets/auth/password_strength_bar.dart';
-import '../../core/theme/app_colors.dart';
 import '../home/home_screen.dart';
 import '../profile/legal_content_screen.dart';
 import 'login_screen.dart';
