@@ -1,0 +1,23 @@
+# Task List - Ultra-Professional App Suite
+
+- `[x]` **High-End Onboarding**
+    - `[x]` Create `OnboardingScreen` with 3-page carousel
+    - `[x]` Integrate `SharedPreferences` for first-launch detection
+    - `[x]` Wire `OnboardingScreen` as the initial route
+- `[x]` **Monetization & Premium Strategy**
+    - `[x]` Create `PremiumUpsellScreen` (Sleek dark theme comparison)
+    - `[x]` Add "Upgrade to Pro" banner to `HomeScreen`
+- `[x]` **Support, Legal & Feedback**
+    - `[x]` Create `LegalContentScreen` for Policies & Terms
+    - `[x]` Create `FeedbackScreen` with professional form
+    - `[x]` Update `ProfileScreen`:
+        - `[x]` Add Theme Toggle (Light/Dark/System)
+        - `[x]` Add Delete Account flow with confirmation
+        - `[x]` Add Version number and Support links
+- `[x]` **Advanced Resume Controls**
+    - `[x]` Update `ResumePreviewScreen` with "Export Settings"
+    - `[x]` Update `PdfExportService` to support **A4** vs **US Letter**
+- `[x]` **Verification**
+    - `[x]` Verify onboarding flow on clean install
+    - `[x]` Verify theme switching across all screens
+    - `[x]` Verify PDF layout for different paper sizes

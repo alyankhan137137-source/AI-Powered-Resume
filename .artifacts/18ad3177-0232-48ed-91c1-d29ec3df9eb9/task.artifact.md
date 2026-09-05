@@ -1,0 +1,6 @@
+- `[x]` Optimize `lib/main.dart` for fast startup
+    - `[x]` Remove `await` from non-critical Firebase services
+    - `[x]` Enable Firestore offline persistence
+- `[x]` Streamline `AuthService` in `lib/services/auth_service.dart`
+    - `[x]` Optimize `_fetchOrCreateProfile` logic
+- `[x]` Verify application startup speed and auth flow

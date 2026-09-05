@@ -1,0 +1,79 @@
+name: ai_resume_builder
+description: AI-powered resume builder — generate, template, and export professional resumes.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # State management
+  provider: ^6.1.2
+
+  # Firebase
+  firebase_core: ^4.14.0
+  firebase_auth: ^6.6.1
+  cloud_firestore: ^6.9.0
+  firebase_storage: ^13.5.0
+  firebase_app_check: ^0.4.7
+  firebase_remote_config: ^6.6.0
+
+  # AI
+  google_generative_ai: ^0.4.0
+
+  # Networking / AI
+  http: ^1.2.2
+  dio: ^5.7.0
+
+  # Env / secrets
+  flutter_dotenv: ^5.1.0
+
+  # PDF export
+  pdf: ^3.11.1
+  printing: ^5.13.3
+  path_provider: ^2.1.4
+  share_plus: ^10.0.2
+
+  # Forms & UX
+  flutter_svg: ^2.0.10+1
+  google_fonts: ^6.2.1
+  shimmer: ^3.0.0
+  flutter_slidable: ^3.1.1
+  image_picker: ^1.1.2
+
+  # LinkedIn OAuth (device flow)
+  url_launcher: ^6.3.0
+  uni_links: ^0.5.1
+
+  # Google Sign-In
+  google_sign_in: ^6.2.2
+
+  # Local persistence (draft autosave)
+  shared_preferences: ^2.3.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # Utils
+  uuid: ^4.5.0
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.13
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/images/
+    - assets/templates/
+  # google_fonts package fetches Inter & Source Serif 4 at runtime;
+  # for offline builds, drop matching .ttf files in assets/fonts/ and
+  # register a fonts: section here (see README "Offline fonts").
