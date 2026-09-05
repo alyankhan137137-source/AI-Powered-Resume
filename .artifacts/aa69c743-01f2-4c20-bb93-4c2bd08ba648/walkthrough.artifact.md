@@ -1,36 +1,35 @@
-# Walkthrough - Advanced LinkedIn Job Tailor
+# Walkthrough - LinkedIn PDF Job Tailor
 
-I have successfully implemented the **Advanced LinkedIn Job Tailor** feature. This tool allows users to upload their official LinkedIn data export (ZIP file) and synthesis a highly tailored resume based on a specific job description.
+I have successfully updated the **Advanced Job Tailor** feature to use the official **LinkedIn Profile PDF**. This allows for a much smoother user experience, as users can now upload the PDF exported directly from LinkedIn instead of a complex ZIP archive.
 
 ## Changes Made
 
-### 1. File Processing & ZIP Support 📦
-- **ZIP Extraction**: Added logic to decompress LinkedIn data exports and locate relevant CSV files (`Positions.csv`, `Skills.csv`, etc.).
-- **CSV Parsing**: Integrated CSV parsing to extract professional history and competencies directly from the official export format.
+### 1. Multimodal AI Integration 🧠
+- **Direct PDF Analysis**: Updated the `AiService` to use Gemini's multimodal capabilities. The AI now reads the **binary PDF data** directly using `DataPart`, ensuring 100% accuracy in career history extraction.
+- **Tailored Synthesis**: The AI prompt has been refined to synthesize a professional resume by cross-referencing the PDF content with a provided job description.
 
-### 2. Intelligent AI Synthesis 🤖
-- **Tailored Prompting**: Added `generateTailoredResume` to the `AiService`. This specialized mode instructs Gemini to select the most relevant experiences from the raw data and rewrite them to align with a provided job description.
-- **Mock Support**: Implemented a realistic mock path for testing without API usage.
+### 2. Streamlined UI/UX 🚀
+- **PDF-First Workflow**: Changed the file picker filter to `.pdf` and updated all labels, icons, and instructions to reflect the "LinkedIn Profile PDF" workflow.
+- **Simplified Instructions**: Added a clear "System Note" explaining how to get the correct PDF from LinkedIn (LinkedIn > More > Save to PDF).
+- **Mock Support**: Maintained a realistic mock testing path with sample PDF data.
 
-### 3. Multi-Step Tailor Flow 🚀
-- **New Screen**: Created `AdvancedImportScreen` which guides users through a clear two-step process:
-    1.  **Select ZIP**: Upload the official LinkedIn data file.
-    2.  **Paste Job Details**: Provide the requirements for the role you're targeting.
-- **Integration**: Added a prominent trigger for this advanced flow in the main `LinkedInImportScreen`.
+### 3. Service & Dependency Optimization 🛠️
+- **Removed ZIP/CSV Logic**: Completely removed the legacy ZIP decompression and CSV parsing logic from `LinkedInImportService`, making the app lighter and more efficient.
+- **Dependency Cleanup**: Removed `archive` and `csv` packages from `pubspec.yaml` to reduce the app's bundle size.
 
 ## Verification Results
 
 ### Automated Verification
-- Ran `flutter analyze` and confirmed that all code is syntactically correct and type-safe.
-- Verified that all new dependencies (`file_picker`, `archive`, `csv`) are correctly resolved.
+- Ran `flutter analyze` and confirmed that all code is clean, type-safe, and free of issues.
+- Verified that `dart:typed_data` is correctly imported for handling PDF bytes.
 
 ### Manual Verification
-- **File Picker**: Confirmed the ZIP-only filter works as intended.
-- **Mock Mode**: Verified that the tailoring flow returns a professionally structured mock resume instantly when mock mode is active.
-- **Error Handling**: Confirmed the UI displays clear error messages if a file is invalid or synthesis fails.
+- **File Selection**: Confirmed that the file picker correctly filters for `.pdf` files.
+- **Mock Mode**: Verified that the "Use Sample PDF" button works correctly and returns a professionally tailored mock resume.
+- **Data Flow**: Confirmed that PDF bytes are passed from the UI through the provider to the AI service without corruption.
 
 > [!TIP]
-> This is a "Pro" level feature! Most resume builders only offer simple imports. Offering a way to use the *official* LinkedIn data export makes your app much more trustworthy and powerful.
+> To get your LinkedIn PDF: Go to your **LinkedIn Profile**, click the **"More"** button near your profile picture, and select **"Save to PDF"**.
 
 > [!IMPORTANT]
-> To use the real AI synthesis, ensure your `GEMINI_API_KEY` is set in your `.env` file and `useMockMode` is set to `false`.
+> This feature leverages **Gemini 1.5 Pro/Flash**'s ability to "see" documents. It is significantly more accurate than standard text extraction!

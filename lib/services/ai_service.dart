@@ -268,9 +268,9 @@ class AiService {
     }
   }
 
-  /// Synthesizes a tailored resume from raw source data (e.g. CSVs) and a job description.
+  /// Synthesizes a tailored resume from a LinkedIn Profile PDF and a job description.
   Future<Map<String, dynamic>?> generateTailoredResume({
-    required Map<String, String> sourceData,
+    required Uint8List pdfBytes,
     required String jobDescription,
   }) async {
     if (AppConfig.useMockMode) {
@@ -279,32 +279,44 @@ class AiService {
         'fullName': 'Alyan Khan',
         'email': AppConfig.mockEmail,
         'targetJobTitle': 'Senior Software Engineer',
-        'summary': 'Tailored summary for the provided job description...',
+        'summary': 'Tailored summary based on your LinkedIn PDF and the provided job description...',
         'experience': [
           {
             'jobTitle': 'Senior Engineer',
             'company': 'Tech Corp',
-            'bullets': ['Tailored bullet point 1', 'Tailored bullet point 2'],
+            'bullets': [
+              'Developed high-performance mobile applications with Flutter.',
+              'Architected scalable backend solutions for global clients.'
+            ],
             'startDate': '2021-01-01T00:00:00.000',
           }
         ],
-        'skills': [{'name': 'Flutter'}, {'name': 'Cloud Architecture'}],
+        'skills': [{'name': 'Flutter'}, {'name': 'Dart'}, {'name': 'Cloud Computing'}],
         'templateId': 'modern',
         'createdAt': DateTime.now().toIso8601String(),
         'updatedAt': DateTime.now().toIso8601String(),
       };
     }
 
-    final content = await _complete(
-      'You are an expert resume writer. Synthesize a professional resume from '
-      'the provided source data (raw CSV content) and tailor it to the specific '
-      'job description. Select only the most relevant experiences and rewrite '
-      'bullet points to align with the job requirements. Return ONLY a JSON '
-      'object matching the Resume model schema.',
-      'Source Data:\n${sourceData.toString()}\n\nJob Description:\n$jobDescription',
-      isJson: true,
-    );
+    final model = _getModel();
+    final prompt = [
+      Content.multi([
+        DataPart('application/pdf', pdfBytes),
+        TextPart(
+          'You are an expert resume writer. I have provided my official LinkedIn '
+          'Profile PDF. Please synthesize a professional resume from this data '
+          'that is highly tailored to the following job description. '
+          'Rewrite bullet points to highlight matching achievements. '
+          'Return ONLY a JSON object matching the Resume model schema.\n\n'
+          'Target Job Description:\n$jobDescription',
+        ),
+      ])
+    ];
+
     try {
+      final response = await model.generateContent(prompt, 
+        generationConfig: GenerationConfig(responseMimeType: 'application/json'));
+      final content = response.text?.trim() ?? '';
       return jsonDecode(content) as Map<String, dynamic>;
     } catch (e) {
       debugPrint('AI Tailor Error: $e');

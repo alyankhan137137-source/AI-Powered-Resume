@@ -158,12 +158,12 @@ class _LinkedInImportScreenState extends State<LinkedInImportScreen> {
             Text('Advanced Job Tailor', style: AppTypography.bodyStrong),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'Upload your official LinkedIn ZIP export and a job description. AI will synthesis a tailored resume for you.',
+              'Upload your official LinkedIn "Profile PDF" and a job description. AI will synthesis a tailored resume for you.',
               style: AppTypography.bodyMuted,
             ),
             const SizedBox(height: AppSpacing.md),
             PrimaryButton(
-              label: 'Use ZIP Export & Job Post',
+              label: 'Use Profile PDF & Job Post',
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AdvancedImportScreen()),

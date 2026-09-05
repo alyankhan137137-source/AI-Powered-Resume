@@ -86,7 +86,7 @@ class PdfExportService {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(r.fullName, style: const pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+        pw.Text(r.fullName, style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 4),
         pw.Text(
           [r.email, r.phone, r.location].where((s) => s.isNotEmpty).join('  ·  '),
@@ -146,7 +146,7 @@ class PdfExportService {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                          pw.Text(e.degree, style: const pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
+                          pw.Text(e.degree, style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold)),
                           pw.Text(e.institution, style: const pw.TextStyle(fontSize: 8.5)),
                         ],
                       ),
@@ -193,7 +193,7 @@ class PdfExportService {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               pw.Text('${e.jobTitle} — ${e.company}',
-                  style: const pw.TextStyle(fontSize: 10.5, fontWeight: pw.FontWeight.bold)),
+                  style: pw.TextStyle(fontSize: 10.5, fontWeight: pw.FontWeight.bold)),
               pw.Text(dateRange, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700)),
             ],
           ),
@@ -218,7 +218,7 @@ class PdfExportService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text('${e.degree} in ${e.fieldOfStudy}',
-                  style: const pw.TextStyle(fontSize: 10.5, fontWeight: pw.FontWeight.bold)),
+                  style: pw.TextStyle(fontSize: 10.5, fontWeight: pw.FontWeight.bold)),
               pw.Text(e.institution, style: const pw.TextStyle(fontSize: 9.5)),
             ],
           ),

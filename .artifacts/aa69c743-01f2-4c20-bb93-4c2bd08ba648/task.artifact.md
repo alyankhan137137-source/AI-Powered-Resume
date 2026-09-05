@@ -1,14 +1,16 @@
-# Task List - Advanced LinkedIn Job Tailor
+# Task List - LinkedIn PDF Job Tailor
 
-- `[x]` Setup Dependencies
-    - `[x]` Add `file_picker`, `archive`, and `csv` to `pubspec.yaml`
+- `[x]` Cleanup Dependencies
+    - `[x]` Remove `archive` and `csv` from `pubspec.yaml`
     - `[x]` Run `flutter pub get`
-- `[x]` Enhanced Service Layer
-    - `[x]` Implement ZIP & CSV parsing in `LinkedInImportService`
-    - `[x]` Add `generateTailoredResume` to `AiService`
-- `[x]` Advanced Import UI
-    - `[x]` Create `AdvancedImportScreen` with multi-step flow
-    - `[x]` Add trigger in `LinkedInImportScreen`
+- `[x]` Update AI Service
+    - `[x]` Modify `generateTailoredResume` to support multimodal PDF input
+- `[x]` Refactor LinkedIn Import Service
+    - `[x]` Remove ZIP/CSV parsing logic
+- `[x]` Update Advanced Import UI
+    - `[x]` Change file picker filter to `.pdf`
+    - `[x]` Update labels and icons (ZIP -> PDF)
+    - `[x]` Pass PDF bytes to the tailored generation flow
 - `[x]` Verification
-    - `[x]` Verify ZIP parsing with mock files
-    - `[x]` Verify AI synthesis logic
+    - `[x]` Verify PDF selection
+    - `[x]` Verify AI synthesis with mock/real data

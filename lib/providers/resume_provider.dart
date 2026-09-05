@@ -225,11 +225,11 @@ class ResumeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> generateTailoredResume(Map<String, String> sourceData, String jobDescription) async {
+  Future<void> generateTailoredResume(Uint8List pdfBytes, String jobDescription) async {
     _aiStatus = AiTaskStatus.loading;
     notifyListeners();
     try {
-      final data = await _ai.generateTailoredResume(sourceData: sourceData, jobDescription: jobDescription);
+      final data = await _ai.generateTailoredResume(pdfBytes: pdfBytes, jobDescription: jobDescription);
       if (data != null) {
         _draft = Resume.fromJson(data);
         _aiStatus = AiTaskStatus.success;

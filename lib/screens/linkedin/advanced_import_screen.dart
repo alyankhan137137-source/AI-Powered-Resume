@@ -1,8 +1,8 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/resume_provider.dart';
-import '../../services/linkedin_import_service.dart';
 import '../../widgets/common/app_scaffold.dart';
 import '../../widgets/common/primary_button.dart';
 import '../../widgets/common/app_text_field.dart';
@@ -20,33 +20,29 @@ class AdvancedImportScreen extends StatefulWidget {
 }
 
 class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
-  final _service = LinkedInImportService();
   final _jobDescController = TextEditingController();
   PlatformFile? _selectedFile;
   bool _extracting = false;
 
-  void _pickFile() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select ZIP File?'),
-        content: const Text('Click "OPEN" to browse your computer for the LinkedIn ZIP.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              FilePicker.platform.pickFiles(type: FileType.any, withData: true).then((result) {
-                if (result != null && result.files.isNotEmpty) {
-                  setState(() => _selectedFile = result.files.first);
-                }
-              });
-            },
-            child: const Text('OPEN'),
-          ),
-        ],
-      ),
-    );
+  void _handlePickFile() {
+    FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+      withData: true,
+    ).then((result) {
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        if (file.name.toLowerCase().endsWith('.pdf')) {
+          setState(() => _selectedFile = file);
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please select a PDF file')),
+            );
+          }
+        }
+      }
+    });
   }
 
   Future<void> _generate() async {
@@ -54,23 +50,20 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
 
     setState(() => _extracting = true);
     try {
-      final sourceData = await _service.extractDataFromZip(_selectedFile!.bytes!);
-      if (mounted) {
-        await context.read<ResumeProvider>().generateTailoredResume(
-          sourceData,
-          _jobDescController.text,
+      await context.read<ResumeProvider>().generateTailoredResume(
+        _selectedFile!.bytes!,
+        _jobDescController.text,
+      );
+      if (mounted && context.read<ResumeProvider>().aiStatus == AiTaskStatus.success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const BuilderFlowScreen()),
         );
-        if (mounted && context.read<ResumeProvider>().aiStatus == AiTaskStatus.success) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const BuilderFlowScreen()),
-          );
-        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to process file. Ensure it is a valid LinkedIn ZIP.')),
+          const SnackBar(content: Text('Failed to process PDF. Ensure it is a valid LinkedIn export.')),
         );
       }
     } finally {
@@ -91,15 +84,8 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppTheme.primaryPurple,
         icon: const Icon(Icons.upload_file),
-        label: const Text('SELECT ZIP FILE'),
-        onPressed: () {
-          // Absolute most direct trigger to bypass browser security
-          FilePicker.platform.pickFiles(type: FileType.any, withData: true).then((result) {
-            if (result != null && result.files.isNotEmpty) {
-              setState(() => _selectedFile = result.files.first);
-            }
-          });
-        },
+        label: const Text('SELECT PDF FILE'),
+        onPressed: _handlePickFile,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -107,9 +93,46 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 60),
-            if (_selectedFile != null)
+            
+            // Environment Alert
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1), 
+                borderRadius: BorderRadius.circular(8), 
+                border: Border.all(color: Colors.redAccent)
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
+                      SizedBox(width: 8),
+                      Text('SYSTEM ALERT', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'IMPORTANT: Select your "Profile PDF" (LinkedIn > More > Save to PDF). If no window opens, please click "Open in Browser" at the top of your IDE preview pane.',
+                    style: TextStyle(color: Colors.white70, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: AppSpacing.lg),
+
+            if (_selectedFile == null)
+              TextButton.icon(
+                onPressed: () {
+                  setState(() => _selectedFile = PlatformFile(name: 'Sample_Profile.pdf', size: 1024, bytes: Uint8List(0)));
+                },
+                icon: const Icon(Icons.lightbulb_outline),
+                label: const Text('USE SAMPLE PDF TO TEST'),
+              )
+            else
               Container(
-                margin: const EdgeInsets.only(bottom: AppSpacing.lg),
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
                   color: AppColors.growth600.withValues(alpha: 0.1),
@@ -124,18 +147,9 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
                     IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setState(() => _selectedFile = null)),
                   ],
                 ),
-              )
-            else
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.redAccent)),
-                child: const Text(
-                  'IMPORTANT: If no window opens, please click "Open in Browser" at the top of your IDE preview pane.',
-                  style: TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold),
-                ),
               ),
-            const SizedBox(height: AppSpacing.xl),
             
+            const SizedBox(height: AppSpacing.xl),
             Text('Step 2: Paste Job Description', style: AppTypography.bodyStrong.copyWith(color: isDark ? Colors.white : AppColors.ink900)),
             const SizedBox(height: AppSpacing.sm),
             AppTextField(

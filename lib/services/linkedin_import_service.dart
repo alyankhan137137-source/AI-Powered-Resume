@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:archive/archive.dart';
 import '../models/resume_model.dart';
 import '../models/experience_model.dart';
 import '../models/education_model.dart';
@@ -102,28 +100,5 @@ class LinkedInImportService {
   /// ResumeProvider.importFromPastedProfileText in a future extension point.
   String cleanPastedProfileText(String raw) {
     return raw.replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
-  }
-
-  /// Extracts data from a LinkedIn ZIP archive export.
-  /// Locates CSV files like Positions.csv, Skills.csv, and Education.csv.
-  Future<Map<String, String>> extractDataFromZip(List<int> bytes) async {
-    final archive = ZipDecoder().decodeBytes(bytes);
-    final Map<String, String> data = {};
-
-    for (final file in archive) {
-      if (file.isFile) {
-        final name = file.name.toLowerCase();
-        if (name.contains('positions.csv')) {
-          data['positions'] = utf8.decode(file.content);
-        } else if (name.contains('skills.csv')) {
-          data['skills'] = utf8.decode(file.content);
-        } else if (name.contains('education.csv')) {
-          data['education'] = utf8.decode(file.content);
-        } else if (name.contains('profile.csv')) {
-          data['profile'] = utf8.decode(file.content);
-        }
-      }
-    }
-    return data;
   }
 }
