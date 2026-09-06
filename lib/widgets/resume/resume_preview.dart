@@ -30,18 +30,39 @@ class ResumePreview extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(AppSpacing.xl),
       child: SingleChildScrollView(
-        child: resume.templateId == ResumeTemplateId.modern
-            ? _modernLayout()
-            : _standardLayout(),
+        child: _buildPreviewLayout(),
       ),
     );
   }
 
+  Widget _buildPreviewLayout() {
+    switch (resume.templateId) {
+      case ResumeTemplateId.classic:
+      case ResumeTemplateId.minimal:
+      case ResumeTemplateId.academic:
+        return _standardLayout();
+      case ResumeTemplateId.modern:
+      case ResumeTemplateId.creative:
+        return _modernLayout();
+      case ResumeTemplateId.executive:
+      case ResumeTemplateId.professionalBold:
+        return _boldLayout();
+      case ResumeTemplateId.techClean:
+        return _techLayout();
+      case ResumeTemplateId.compact:
+        return _compactLayout();
+      case ResumeTemplateId.elegant:
+        return _elegantLayout();
+    }
+  }
+
   Widget _standardLayout() {
+    final isAcademic = resume.templateId == ResumeTemplateId.academic;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(resume.fullName.isEmpty ? 'Your name' : resume.fullName, style: AppTypography.serifName),
+        Text(resume.fullName.isEmpty ? 'Your Name' : resume.fullName, 
+          style: AppTypography.serifName.copyWith(color: isAcademic ? _accent : null)),
         const SizedBox(height: 4),
         Text(
           [resume.email, resume.phone, resume.location].where((s) => s.isNotEmpty).join('  ·  '),
@@ -51,63 +72,135 @@ class ResumePreview extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         if (resume.summary.isNotEmpty) _section('Summary', [Text(resume.summary, style: AppTypography.serifBody)]),
-        if (resume.experience.isNotEmpty)
-          _section('Experience', resume.experience.map(_experienceBlock).toList()),
-        if (resume.education.isNotEmpty)
-          _section('Education', resume.education.map(_educationBlock).toList()),
-        if (resume.skills.isNotEmpty)
-          _section('Skills', [
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.xs,
-              children: resume.skills.map((s) => Text(s.name, style: AppTypography.serifBody)).toList(),
-            ),
-          ]),
+        if (resume.experience.isNotEmpty) _section('Experience', resume.experience.map(_experienceBlock).toList()),
+        if (resume.education.isNotEmpty) _section('Education', resume.education.map(_educationBlock).toList()),
       ],
     );
   }
 
   Widget _modernLayout() {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 130,
-            child: Column(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 120,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(resume.fullName.isEmpty ? 'Your Name' : resume.fullName,
+                  style: AppTypography.serifName.copyWith(fontSize: 18, color: _accent),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis),
+              const SizedBox(height: AppSpacing.sm),
+              Text(resume.email, style: AppTypography.caption.copyWith(color: AppColors.ink600, fontSize: 10), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(resume.phone, style: AppTypography.caption.copyWith(color: AppColors.ink600, fontSize: 10)),
+              if (resume.skills.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.lg),
+                Text('SKILLS', style: AppTypography.serifSectionHeading.copyWith(color: _accent, fontSize: 10)),
+                const SizedBox(height: AppSpacing.xs),
+                ...resume.skills.map((s) => Text(s.name, style: AppTypography.serifBody.copyWith(fontSize: 10))),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(width: AppSpacing.lg),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (resume.summary.isNotEmpty) _section('Summary', [Text(resume.summary, style: AppTypography.serifBody)]),
+              if (resume.experience.isNotEmpty) _section('Experience', resume.experience.map(_experienceBlock).toList()),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _boldLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          width: double.infinity,
+          decoration: BoxDecoration(color: _accent, borderRadius: BorderRadius.circular(8)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(resume.fullName.isEmpty ? 'YOUR NAME' : resume.fullName.toUpperCase(), 
+                style: AppTypography.serifName.copyWith(color: Colors.white, fontSize: 22)),
+              Text(resume.targetJobTitle.toUpperCase(), style: const TextStyle(color: Colors.white70, fontSize: 12, letterSpacing: 1)),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        if (resume.summary.isNotEmpty) _section('Objective', [Text(resume.summary, style: AppTypography.serifBody)]),
+        if (resume.experience.isNotEmpty) _section('Professional History', resume.experience.map(_experienceBlock).toList()),
+      ],
+    );
+  }
+
+  Widget _techLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(resume.fullName.isEmpty ? 'Your name' : resume.fullName,
-                    style: AppTypography.serifName.copyWith(fontSize: 18, color: _accent),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
-                const SizedBox(height: AppSpacing.sm),
-                Text(resume.email, style: AppTypography.caption.copyWith(color: AppColors.ink600), maxLines: 1, overflow: TextOverflow.ellipsis),
-                Text(resume.phone, style: AppTypography.caption.copyWith(color: AppColors.ink600), maxLines: 1, overflow: TextOverflow.ellipsis),
-                Text(resume.location, style: AppTypography.caption.copyWith(color: AppColors.ink600), maxLines: 1, overflow: TextOverflow.ellipsis),
-                if (resume.skills.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.lg),
-                  Text('SKILLS', style: AppTypography.serifSectionHeading.copyWith(color: _accent, fontSize: 11)),
-                  const SizedBox(height: AppSpacing.xs),
-                  ...resume.skills.map((s) => Text(s.name, style: AppTypography.serifBody.copyWith(fontSize: 11))),
-                ],
+                Text(resume.fullName, style: AppTypography.title.copyWith(color: _accent)),
+                Text(resume.targetJobTitle, style: AppTypography.caption),
               ],
             ),
-          ),
-          const SizedBox(width: AppSpacing.lg),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (resume.summary.isNotEmpty)
-                  _section('Summary', [Text(resume.summary, style: AppTypography.serifBody)]),
-                if (resume.experience.isNotEmpty)
-                  _section('Experience', resume.experience.map(_experienceBlock).toList()),
-              ],
-            ),
-          ),
-        ],
-      ),
+            Text(resume.email, style: AppTypography.caption),
+          ],
+        ),
+        const Divider(thickness: 2),
+        if (resume.experience.isNotEmpty) _section('Technical Experience', resume.experience.map(_experienceBlock).toList()),
+        if (resume.skills.isNotEmpty)
+          _section('Skills', [
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: resume.skills.map((s) => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(border: Border.all(color: _accent), borderRadius: BorderRadius.circular(4)),
+                child: Text(s.name, style: const TextStyle(fontSize: 10)),
+              )).toList(),
+            )
+          ]),
+      ],
+    );
+  }
+
+  Widget _compactLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(resume.fullName.toUpperCase(), style: AppTypography.bodyStrong.copyWith(fontSize: 16)),
+        Text('${resume.email} | ${resume.phone}', style: AppTypography.caption.copyWith(fontSize: 10)),
+        const Divider(),
+        if (resume.experience.isNotEmpty) _section('Work', resume.experience.map((e) => _experienceBlock(e, isCompact: true)).toList()),
+      ],
+    );
+  }
+
+  Widget _elegantLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(resume.fullName, style: AppTypography.serifName.copyWith(fontSize: 24, color: _accent)),
+        Text(resume.targetJobTitle.toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 2)),
+        const SizedBox(height: 8),
+        Text('${resume.email}  •  ${resume.location}', style: AppTypography.caption),
+        const SizedBox(height: 16),
+        if (resume.summary.isNotEmpty) Text(resume.summary, textAlign: TextAlign.center, style: AppTypography.serifBody.copyWith(fontStyle: FontStyle.italic)),
+        const SizedBox(height: 16),
+        if (resume.experience.isNotEmpty) _section('Career Path', resume.experience.map(_experienceBlock).toList()),
+      ],
     );
   }
 
@@ -118,9 +211,9 @@ class ResumePreview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title.toUpperCase(),
-              style: AppTypography.serifSectionHeading.copyWith(color: _accent)),
+              style: AppTypography.serifSectionHeading.copyWith(color: _accent, fontSize: 12)),
           const SizedBox(height: 4),
-          Divider(color: _accent, height: 1, thickness: 0.8),
+          Divider(color: _accent, height: 1, thickness: 1),
           const SizedBox(height: AppSpacing.sm),
           ...children,
         ],
@@ -128,26 +221,26 @@ class ResumePreview extends StatelessWidget {
     );
   }
 
-  Widget _experienceBlock(dynamic e) {
+  Widget _experienceBlock(dynamic e, {bool isCompact = false}) {
     final fmt = DateFormat('MMM yyyy');
     final range = '${fmt.format(e.startDate)} – ${e.endDate == null ? 'Present' : fmt.format(e.endDate)}';
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: EdgeInsets.only(bottom: isCompact ? AppSpacing.sm : AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(child: Text('${e.jobTitle} — ${e.company}', style: AppTypography.serifBody.copyWith(fontWeight: FontWeight.w700))),
-              Text(range, style: AppTypography.caption.copyWith(color: AppColors.ink600)),
+              Expanded(child: Text('${e.jobTitle} — ${e.company}', 
+                style: AppTypography.serifBody.copyWith(fontWeight: FontWeight.bold, fontSize: isCompact ? 10 : 11))),
+              Text(range, style: AppTypography.caption.copyWith(fontSize: 9)),
             ],
           ),
-          const SizedBox(height: 3),
           for (final b in e.bullets)
             Padding(
-              padding: const EdgeInsets.only(bottom: 2, left: 4),
-              child: Text('•  $b', style: AppTypography.serifBody),
+              padding: const EdgeInsets.only(bottom: 2, left: 8),
+              child: Text('•  $b', style: AppTypography.serifBody.copyWith(fontSize: isCompact ? 9 : 10)),
             ),
         ],
       ),
@@ -161,16 +254,8 @@ class ResumePreview extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('${e.degree} in ${e.fieldOfStudy}', style: AppTypography.serifBody.copyWith(fontWeight: FontWeight.w700)),
-                Text(e.institution, style: AppTypography.serifBody),
-              ],
-            ),
-          ),
-          Text(fmt.format(e.startDate), style: AppTypography.caption.copyWith(color: AppColors.ink600)),
+          Expanded(child: Text('${e.degree}, ${e.institution}', style: AppTypography.serifBody.copyWith(fontSize: 10))),
+          Text(fmt.format(e.startDate), style: AppTypography.caption.copyWith(fontSize: 9)),
         ],
       ),
     );

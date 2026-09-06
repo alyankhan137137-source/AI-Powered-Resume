@@ -1,11 +1,8 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/resume_provider.dart';
-import '../../models/resume_model.dart';
-import '../../models/experience_model.dart';
-import '../../models/skill_model.dart';
-import '../../models/template_model.dart';
 import '../../widgets/common/app_scaffold.dart';
 import '../../widgets/common/primary_button.dart';
 import '../../widgets/common/app_text_field.dart';
@@ -84,12 +81,6 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
         title: Text('Advanced Job Tailor', style: TextStyle(color: isDark ? Colors.white : AppColors.ink900, fontWeight: FontWeight.bold)),
         iconTheme: IconThemeData(color: isDark ? Colors.white : AppColors.ink900),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppTheme.primaryPurple,
-        icon: const Icon(Icons.upload_file),
-        label: const Text('SELECT PDF FILE'),
-        onPressed: _handlePickFile,
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -126,65 +117,37 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
 
             const SizedBox(height: AppSpacing.lg),
 
-            if (_selectedFile == null)
-              TextButton.icon(
-                onPressed: () {
-                  // Pre-filled mock data that simulates a "Master Tailor" response
-                  final mockReadyResume = Resume(
-                    title: 'Tailored for Senior Engineer Role',
-                    fullName: 'Alyan Khan',
-                    email: 'alyan.khan@example.com',
-                    phone: '+1 (555) 012-3456',
-                    location: 'San Francisco, CA',
-                    targetJobTitle: 'Senior Flutter Engineer',
-                    summary: 'Highly analytical Senior Software Engineer with 6+ years of expertise in Dart and Flutter. '
-                             'Spearheaded the development of a global banking app with 1M+ active users. '
-                             'Expert in architecting complex state management solutions and high-performance CI/CD pipelines.',
-                    experience: [
-                      ExperienceEntry(
-                        jobTitle: 'Senior Mobile Lead',
-                        company: 'Innovate Tech',
-                        bullets: [
-                          'Orchestrated the migration of legacy mobile apps to Flutter, reducing maintenance costs by 45%.',
-                          'Optimized app performance through advanced isolate management, achieving a consistent 60fps.',
-                          'Established rigorous automated testing standards that reduced post-release bugs by 30%.',
-                          'Mentored a cross-functional team of 12 engineers in agile best practices.'
-                        ],
-                        startDate: DateTime(2021, 3, 15),
-                      ),
-                      ExperienceEntry(
-                        jobTitle: 'Full Stack Engineer',
-                        company: 'Startup Hub',
-                        bullets: [
-                          'Developed and deployed scalable Node.js microservices serving 100k+ daily requests.',
-                          'Implemented responsive UI components using React, increasing user engagement by 20%.',
-                          'Automated deployment workflows using GitHub Actions and Kubernetes.'
-                        ],
-                        startDate: DateTime(2018, 6, 1),
-                        endDate: DateTime(2021, 2, 28),
-                      )
-                    ],
-                    skills: [
-                      SkillEntry(name: 'Flutter / Dart'),
-                      SkillEntry(name: 'State Management (Provider, Bloc)'),
-                      SkillEntry(name: 'Cloud Infrastructure (AWS, GCP)'),
-                      SkillEntry(name: 'CI/CD & DevOps'),
-                      SkillEntry(name: 'TDD & Automated Testing'),
-                      SkillEntry(name: 'Leadership & Mentoring')
-                    ],
-                    templateId: ResumeTemplateId.modern,
-                  );
-
-                  context.read<ResumeProvider>().loadDraft(mockReadyResume);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const BuilderFlowScreen()),
-                  );
-                },
-                icon: const Icon(Icons.lightbulb_outline),
-                label: const Text('USE SAMPLE PDF TO TEST'),
-              )
-            else
+            // STEP 1: SOURCE
+            _StepHeader(number: '1', title: 'Your Career History', isComplete: _selectedFile != null),
+            const SizedBox(height: AppSpacing.md),
+            if (_selectedFile == null) ...[
+              ElevatedButton.icon(
+                onPressed: _handlePickFile,
+                icon: const Icon(Icons.upload_file),
+                label: const Text('UPLOAD LINKEDIN PDF'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  backgroundColor: AppTheme.primaryPurple.withValues(alpha: 0.1),
+                  foregroundColor: AppTheme.primaryPurple,
+                  side: const BorderSide(color: AppTheme.primaryPurple),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Center(
+                child: TextButton.icon(
+                  onPressed: () {
+                    // Set sample file state so user can proceed to Step 2
+                    setState(() => _selectedFile = PlatformFile(
+                      name: 'Sample_Career_History.pdf', 
+                      size: 2048, 
+                      bytes: Uint8List(0)
+                    ));
+                  },
+                  icon: const Icon(Icons.lightbulb_outline, size: 16),
+                  label: const Text('OR USE SAMPLE DATA TO TEST'),
+                ),
+              ),
+            ] else
               Container(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
@@ -196,34 +159,89 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
                   children: [
                     const Icon(Icons.check_circle, color: AppColors.growth600),
                     const SizedBox(width: 12),
-                    Expanded(child: Text(_selectedFile!.name, style: AppTypography.bodyStrong)),
-                    IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setState(() => _selectedFile = null)),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(_selectedFile!.name, style: AppTypography.bodyStrong),
+                          const Text('Source data loaded', style: TextStyle(color: AppColors.growth600, fontSize: 11)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.refresh, size: 18), 
+                      onPressed: () => setState(() => _selectedFile = null),
+                      tooltip: 'Change source',
+                    ),
                   ],
                 ),
               ),
             
             const SizedBox(height: AppSpacing.xl),
-            Text('Step 2: Paste Job Description', style: AppTypography.bodyStrong.copyWith(color: isDark ? Colors.white : AppColors.ink900)),
-            const SizedBox(height: AppSpacing.sm),
+
+            // STEP 2: TARGET
+            _StepHeader(number: '2', title: 'Target Job Description', isComplete: _jobDescController.text.trim().isNotEmpty),
+            const SizedBox(height: AppSpacing.md),
             AppTextField(
               label: 'Job Details',
               controller: _jobDescController,
               maxLines: 8,
+              onChanged: (_) => setState(() {}),
               hint: 'Paste the requirements and description here…',
             ),
             
             const SizedBox(height: AppSpacing.xxl),
             
-            PrimaryButton(
-              label: 'Generate Tailored Resume',
-              isLoading: _extracting || provider.aiStatus == AiTaskStatus.loading,
-              onPressed: (_selectedFile == null || _jobDescController.text.trim().isEmpty) ? null : _generate,
+            SizedBox(
+              width: double.infinity,
+              child: PrimaryButton(
+                label: 'Generate Tailored Resume',
+                isLoading: _extracting || provider.aiStatus == AiTaskStatus.loading,
+                onPressed: (_selectedFile == null || _jobDescController.text.trim().isEmpty) ? null : _generate,
+              ),
             ),
+            
+            if (provider.aiError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.md),
+                child: Text(provider.aiError!, style: const TextStyle(color: Colors.redAccent, fontSize: 13)),
+              ),
             
             const SizedBox(height: 100),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _StepHeader extends StatelessWidget {
+  final String number;
+  final String title;
+  final bool isComplete;
+
+  const _StepHeader({required this.number, required this.title, required this.isComplete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isComplete ? AppColors.growth600 : AppTheme.primaryPurple,
+          ),
+          child: Center(
+            child: Text(number, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(title, style: AppTypography.bodyStrong.copyWith(fontSize: 16)),
+        const Spacer(),
+        if (isComplete) const Icon(Icons.check, color: AppColors.growth600, size: 18),
+      ],
     );
   }
 }

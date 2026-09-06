@@ -1,53 +1,53 @@
-# Implementation Plan - Ultra-Tailored AI Synthesis & PNG Export
+# Implementation Plan - Top 10 Professional Resume Templates
 
-The goal is to significantly improve the AI's ability to create a "full ready resume" from a LinkedIn PDF and a job description. Additionally, I will add the ability to export the final resume as a high-quality PNG image.
+The goal is to expand the app's template library from 3 to 10 professional, hiring-ready designs. Each template will be optimized for different industries and career stages, ensuring a high-quality export in both PDF and PNG formats.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **AI Prompt Engineering**: I will refactor the AI prompt to be much more aggressive and comprehensive. It will be instructed to act as a "Senior Recruitment Consultant" and build a resume that is 100% complete—not just a draft.
+> **New Layouts**: I will implement 7 new professional layouts. While some share structural similarities (e.g., sidebar vs. single-column), each will have unique typography, spacing, and accent treatments to cater to different roles (Executive, Creative, Tech, etc.).
 
 > [!NOTE]
-> **PNG Export**: On Mobile/Desktop, I will use the `printing` package's `raster` capability to convert the PDF pages into high-quality images for local storage.
+> **Typography**: I will utilize the existing `google_fonts` and `pdf` package font capabilities to ensure the new templates look "premium" and are ATS-friendly.
 
 ## Proposed Changes
 
-### 1. AI Service Refactoring (The "Master Tailor" Prompt)
+### 1. Template Model Expansion
 
-#### [MODIFY] [ai_service.dart](file:///E:/resume_builder_app/lib/services/ai_service.dart)
-- Update `generateTailoredResume` prompt:
-    - **Instruction**: Synthesize a *final-ready* resume.
-    - **Optimization**: Analyze the job description for specific technical and soft skills.
-    - **Contextual Rewriting**: Map the LinkedIn history to the job requirements, rewriting every bullet point for maximum impact.
-    - **Completeness**: Ensure name, contact, summary, full experience history (tailored), education, and prioritized skills are all included.
+#### [MODIFY] [template_model.dart](file:///E:/resume_builder_app/lib/models/template_model.dart)
+- Update `ResumeTemplateId` enum with 7 new IDs: `executive`, `creative`, `tech_clean`, `academic`, `compact`, `elegant`, `professional_bold`.
+- Update `ResumeTemplate.all` with descriptions and default accent colors for all 10 templates.
 
 ---
 
-### 2. PNG Export Integration
+### 2. PDF Export Engine Upgrade
 
 #### [MODIFY] [pdf_export_service.dart](file:///E:/resume_builder_app/lib/services/pdf_export_service.dart)
-- Add `exportAsPng(Resume resume, {bool isLetter = true})` method.
-- Implementation: Generate the PDF document, then use `Printing.raster` to convert the first page (resumes are typically 1 page) into a PNG byte stream and save it to the user's device.
+- Implement 7 new private layout methods (e.g., `_buildExecutiveLayout`, `_buildCreativeLayout`).
+- Update `generatePdf`, `downloadPdf`, and `downloadAsImage` to route to the correct layout method based on `resume.templateId`.
+- Ensure all layouts support dynamic accent colors.
 
 ---
 
-### 3. UI Enhancements (Download Options)
+### 3. In-App Preview Synchronization
 
-#### [MODIFY] [resume_preview_screen.dart](file:///E:/resume_builder_app/lib/screens/templates/resume_preview_screen.dart)
-- Update the "Download" button to show a choice: **Download PDF** or **Download PNG**.
-- Ensure loading states are handled for both formats.
+#### [MODIFY] [resume_preview.dart](file:///E:/resume_builder_app/lib/widgets/resume/resume_preview.dart)
+- Implement matching UI layouts for the in-app preview so the user sees exactly what will be exported.
+- Refactor the widget to handle the expanded list of templates gracefully with scrolling if necessary.
 
 ---
 
-### 4. LinkedIn Logic Polish
+### 4. Template Gallery Enhancement
 
-#### [MODIFY] [advanced_import_screen.dart](file:///E:/resume_builder_app/lib/screens/linkedin/advanced_import_screen.dart)
-- Update "Mock" data returned in `_generate` to be much more detailed, simulating the "full ready" experience for testing.
+#### [MODIFY] [template_gallery_screen.dart](file:///E:/resume_builder_app/lib/screens/templates/template_gallery_screen.dart)
+- Ensure the template selector handles 10 items elegantly (using a scrollable list or grid).
+- Improve the visual feedback when a template is selected.
 
 ## Verification Plan
 
 ### Manual Verification
-1. **AI Synthesis**: Upload a PDF and a real job post. Verify the resulting builder draft is comprehensive (Summary is present, bullets are rewritten, skills are prioritized).
-2. **PDF Download**: Verify the PDF still downloads correctly to local storage.
-3. **PNG Download**: Tap "Download PNG" and verify a `.png` file appears in the device's gallery or downloads folder.
-4. **Content Quality**: Verify that the PNG is high-resolution and the text is perfectly legible.
+1. **Gallery Navigation**: Verify all 10 templates appear in the gallery and can be selected.
+2. **Preview Accuracy**: Check each of the 10 templates in the live preview to ensure text doesn't overflow and colors are applied.
+3. **PDF Export**: Export one resume using each of the 10 templates and verify the PDF looks professional on a computer.
+4. **PNG Export**: Verify the PNG export matches the PDF layout for the new templates.
+5. **ATS Check**: Ensure all text in the new PDF templates is selectable and searchable (Standard ATS requirement).

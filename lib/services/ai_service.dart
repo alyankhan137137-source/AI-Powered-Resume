@@ -278,20 +278,49 @@ class AiService {
       return {
         'fullName': 'Alyan Khan',
         'email': AppConfig.mockEmail,
-        'targetJobTitle': 'Senior Software Engineer',
-        'summary': 'Tailored summary based on your LinkedIn PDF and the provided job description...',
+        'phone': '+1 (555) 123-4567',
+        'location': 'New York, NY',
+        'targetJobTitle': 'Senior Flutter Architect',
+        'summary': 'Strategic Senior Software Architect with over 8 years of excellence in building large-scale, '
+                   'high-performance mobile and web ecosystems. Expert in Flutter and Dart, with a proven track record '
+                   'of leading cross-functional teams to deliver award-winning products. Specializing in cloud-native '
+                   'architectures, state management optimization, and establishing world-class CI/CD standards.',
         'experience': [
           {
-            'jobTitle': 'Senior Engineer',
-            'company': 'Tech Corp',
+            'jobTitle': 'Principal Mobile Architect',
+            'company': 'Global Fintech Solutions',
             'bullets': [
-              'Developed high-performance mobile applications with Flutter.',
-              'Architected scalable backend solutions for global clients.'
+              'Directed the architectural redesign of the core banking app, resulting in a 50% improvement in app load times across 2M+ devices.',
+              'Implemented a proprietary state management framework based on BLoC that reduced memory consumption by 35% and simplified feature onboarding.',
+              'Spearheaded the migration to a fully automated CI/CD pipeline using GitHub Actions, cutting release cycles from bi-weekly to daily.',
+              'Mentored a department of 30+ engineers through weekly architectural reviews and technical workshops on Dart internal optimizations.',
+              'Authored high-level technical documentation and design systems that standardized UI development across 5 international teams.'
             ],
             'startDate': '2021-01-01T00:00:00.000',
+            'endDate': null,
+          },
+          {
+            'jobTitle': 'Senior Software Engineer (Mobile)',
+            'company': 'Innovate App Lab',
+            'bullets': [
+              'Developed and launched 4 highly successful mobile applications in the e-commerce sector, each achieving 4.8+ ratings on app stores.',
+              'Reduced post-release production bugs by 40% through the introduction of rigorous Unit and Integration testing protocols (TDD).',
+              'Architected a modular plugin-based system for internal tools, increasing developer productivity by an estimated 25% year-over-year.',
+              'Collaborated closely with product owners to translate complex business requirements into scalable, clean-code technical solutions.',
+              'Optimized network layers using GraphQL and custom caching layers, resulting in 30% less data usage for end-users on limited connectivity.'
+            ],
+            'startDate': '2018-05-10T00:00:00.000',
+            'endDate': '2020-12-31T00:00:00.000',
           }
         ],
-        'skills': [{'name': 'Flutter'}, {'name': 'Dart'}, {'name': 'Cloud Computing'}],
+        'skills': [
+          {'name': 'Flutter Framework & Dart SDK Mastery'},
+          {'name': 'Clean Architecture & SOLID Principles'},
+          {'name': 'Microservices & Cloud Infrastructure (GCP/AWS)'},
+          {'name': 'Performance Profiling & Memory Management'},
+          {'name': 'Automated Testing (Unit, Widget, Integration)'},
+          {'name': 'Team Leadership & Technical Mentorship'}
+        ],
         'templateId': 'modern',
         'createdAt': DateTime.now().toIso8601String(),
         'updatedAt': DateTime.now().toIso8601String(),
@@ -304,19 +333,21 @@ class AiService {
         DataPart('application/pdf', pdfBytes),
         TextPart(
           'You are a Senior Executive Recruitment Consultant and Master Resume Writer. '
-          'I have provided my official LinkedIn Profile PDF as the source of my career history. '
-          'Your goal is to synthesize a 100% FINAL-READY, professional resume that is '
-          'perfectly tailored to the specific job description below.\n\n'
-          'CRITICAL INSTRUCTIONS:\n'
-          '1. ACTION-ORIENTED: Rewrite every experience bullet point to highlight '
-          'achievements that directly solve the pain points in the job description.\n'
-          '2. OPTIMIZED SUMMARY: Write a powerful 3-sentence professional summary '
-          'that positions the candidate as the ideal fit for this specific role.\n'
-          '3. PRIORITIZED SKILLS: Select and rank only the skills most relevant to the role.\n'
-          '4. COMPLETENESS: Do not return a partial draft. The output must be a complete, '
-          'polished resume including Name, Contact, Summary, Experience (fully detailed), '
-          'Education, and Skills.\n'
-          '5. FORMAT: Return ONLY a JSON object matching the app\'s Resume model schema.\n\n'
+          'I have provided my official LinkedIn Profile PDF. Your mission is to '
+          'synthesize a COMPREHENSIVE, one-page ready, professional resume that is '
+          'expertly tailored to the target job description.\n\n'
+          'CRITICAL INSTRUCTIONS FOR DEPTH:\n'
+          '1. EXPANSIVE EXPERIENCE: For every relevant role in the career history, '
+          'provide 4-6 high-impact, achievement-oriented bullet points. '
+          'Use the Google XYZ formula (Accomplished [X] as measured by [Y], by doing [Z]).\n'
+          '2. NO TRUNCATION: Do not summarize the career history into a short list. '
+          'Extract all relevant details and rephrase them for maximum professional impact.\n'
+          '3. ROBUST SUMMARY: Write a substantial 3-4 sentence professional summary '
+          'that connects the candidate\'s unique background to the role\'s requirements.\n'
+          '4. TECHNICAL & SOFT SKILLS: Provide a complete, categorized list of '
+          'skills (Tools, Technologies, Leadership) matching the job description.\n'
+          '5. FORMAT: Return ONLY a JSON object matching the app\'s Resume model schema. '
+          'Ensure the output is long enough to fill a standard A4/US Letter page.\n\n'
           'Target Job Description:\n$jobDescription',
         ),
       ])
@@ -324,7 +355,10 @@ class AiService {
 
     try {
       final response = await model.generateContent(prompt, 
-        generationConfig: GenerationConfig(responseMimeType: 'application/json'));
+        generationConfig: GenerationConfig(
+          responseMimeType: 'application/json',
+          maxOutputTokens: 2048,
+        ));
       final content = response.text?.trim() ?? '';
       return jsonDecode(content) as Map<String, dynamic>;
     } catch (e) {

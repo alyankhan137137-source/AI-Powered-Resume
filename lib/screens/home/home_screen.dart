@@ -209,7 +209,6 @@ class _QuickActionsGrid extends StatelessWidget {
           title: 'Templates',
           color: AppColors.growth600,
           onTap: () {
-            // Future: Directly to gallery with a new draft
             context.read<ResumeProvider>().startNewDraft();
             Navigator.push(context, MaterialPageRoute(builder: (_) => const TemplateGalleryScreen()));
           },
@@ -347,9 +346,20 @@ class _ResumeListItem extends StatelessWidget {
 
   IconData _getTemplateIcon() {
     switch (resume.templateId) {
-      case ResumeTemplateId.classic: return Icons.article_outlined;
-      case ResumeTemplateId.modern: return Icons.dashboard_customize_outlined;
-      case ResumeTemplateId.minimal: return Icons.notes_outlined;
+      case ResumeTemplateId.classic:
+      case ResumeTemplateId.academic:
+      case ResumeTemplateId.elegant:
+        return Icons.article_outlined;
+      case ResumeTemplateId.modern:
+      case ResumeTemplateId.creative:
+      case ResumeTemplateId.techClean:
+        return Icons.dashboard_customize_outlined;
+      case ResumeTemplateId.minimal:
+      case ResumeTemplateId.compact:
+        return Icons.notes_outlined;
+      case ResumeTemplateId.executive:
+      case ResumeTemplateId.professionalBold:
+        return Icons.business_center_outlined;
     }
   }
 
