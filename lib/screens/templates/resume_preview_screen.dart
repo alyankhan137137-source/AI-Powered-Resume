@@ -44,10 +44,40 @@ class _ResumePreviewScreenState extends State<ResumePreviewScreen> {
   }
 
   Future<void> _download() async {
+    final format = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Select Format', style: AppTypography.bodyStrong),
+            const SizedBox(height: AppSpacing.md),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf, color: Colors.redAccent),
+              title: const Text('Download PDF (Recommended)'),
+              onTap: () => Navigator.pop(context, 'pdf'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.image, color: Colors.blueAccent),
+              title: const Text('Download PNG (Image)'),
+              onTap: () => Navigator.pop(context, 'png'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (format == null) return;
+
     setState(() => _downloading = true);
     try {
       final resume = context.read<ResumeProvider>().draft!;
-      await _pdfService.downloadPdf(resume, isLetter: _isLetter);
+      if (format == 'pdf') {
+        await _pdfService.downloadPdf(resume, isLetter: _isLetter);
+      } else {
+        await _pdfService.downloadAsImage(resume, isLetter: _isLetter);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

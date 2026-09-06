@@ -15,6 +15,24 @@ class AppUser {
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
+  AppUser copyWith({
+    String? uid,
+    String? email,
+    String? displayName,
+    String? photoUrl,
+    String? targetJobTitle,
+    DateTime? createdAt,
+  }) {
+    return AppUser(
+      uid: uid ?? this.uid,
+      email: email ?? this.email,
+      displayName: displayName ?? this.displayName,
+      photoUrl: photoUrl ?? this.photoUrl,
+      targetJobTitle: targetJobTitle ?? this.targetJobTitle,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         'uid': uid,
         'email': email,

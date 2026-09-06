@@ -62,6 +62,37 @@ class PdfExportService {
     );
   }
 
+  /// Generates the resume and saves it as a high-quality PNG image.
+  Future<void> downloadAsImage(Resume resume, {bool isLetter = true}) async {
+    final doc = pw.Document();
+    final accent = resume.customAccentColorHex != null
+        ? PdfColor.fromHex(resume.customAccentColorHex!)
+        : _accentFor(resume.templateId);
+
+    doc.addPage(
+      pw.Page(
+        pageFormat: isLetter ? PdfPageFormat.letter : PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.symmetric(horizontal: 40, vertical: 36),
+        build: (context) => resume.templateId == ResumeTemplateId.modern
+            ? _buildModernLayout(resume, accent)
+            : _buildStandardLayout(resume, accent),
+      ),
+    );
+
+    final safeName = resume.fullName.isEmpty ? 'resume' : resume.fullName.replaceAll(' ', '_');
+    
+    // Rasterize the first page of the PDF at high resolution (300 DPI)
+    await for (var page in Printing.raster(await doc.save(), pages: [0], dpi: 300)) {
+      final pngBytes = await page.toPng();
+      
+      // On Web, Printing.sharePdf works like a download for raw bytes too
+      await Printing.sharePdf(
+        bytes: pngBytes,
+        filename: '${safeName}_resume.png',
+      );
+    }
+  }
+
   Future<void> shareOrPrint(File file) async {
     await Printing.sharePdf(bytes: await file.readAsBytes(), filename: file.path.split('/').last);
   }

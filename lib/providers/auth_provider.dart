@@ -60,6 +60,20 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateDisplayName(String newName) async {
+    if (_user == null) return;
+    _setLoading(true);
+    try {
+      await _authService.updateDisplayName(_user!.uid, newName);
+      _user = _user!.copyWith(displayName: newName);
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Could not update name. Please try again.';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();

@@ -126,11 +126,61 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
             if (_selectedFile == null)
               TextButton.icon(
                 onPressed: () {
-                  setState(() => _selectedFile = PlatformFile(name: 'Sample_Profile.pdf', size: 1024, bytes: Uint8List(0)));
+                  // Pre-filled mock data that simulates a "Master Tailor" response
+                  final mockReadyResume = Resume(
+                    title: 'Tailored for Senior Engineer Role',
+                    fullName: 'Alyan Khan',
+                    email: 'alyan.khan@example.com',
+                    phone: '+1 (555) 012-3456',
+                    location: 'San Francisco, CA',
+                    targetJobTitle: 'Senior Flutter Engineer',
+                    summary: 'Highly analytical Senior Software Engineer with 6+ years of expertise in Dart and Flutter. '
+                             'Spearheaded the development of a global banking app with 1M+ active users. '
+                             'Expert in architecting complex state management solutions and high-performance CI/CD pipelines.',
+                    experience: [
+                      ExperienceEntry(
+                        jobTitle: 'Senior Mobile Lead',
+                        company: 'Innovate Tech',
+                        bullets: [
+                          'Orchestrated the migration of legacy mobile apps to Flutter, reducing maintenance costs by 45%.',
+                          'Optimized app performance through advanced isolate management, achieving a consistent 60fps.',
+                          'Established rigorous automated testing standards that reduced post-release bugs by 30%.',
+                          'Mentored a cross-functional team of 12 engineers in agile best practices.'
+                        ],
+                        startDate: DateTime(2021, 3, 15),
+                      ),
+                      ExperienceEntry(
+                        jobTitle: 'Full Stack Engineer',
+                        company: 'Startup Hub',
+                        bullets: [
+                          'Developed and deployed scalable Node.js microservices serving 100k+ daily requests.',
+                          'Implemented responsive UI components using React, increasing user engagement by 20%.',
+                          'Automated deployment workflows using GitHub Actions and Kubernetes.'
+                        ],
+                        startDate: DateTime(2018, 6, 1),
+                        endDate: DateTime(2021, 2, 28),
+                      )
+                    ],
+                    skills: [
+                      SkillEntry(name: 'Flutter / Dart'),
+                      SkillEntry(name: 'State Management (Provider, Bloc)'),
+                      SkillEntry(name: 'Cloud Infrastructure (AWS, GCP)'),
+                      SkillEntry(name: 'CI/CD & DevOps'),
+                      SkillEntry(name: 'TDD & Automated Testing'),
+                      SkillEntry(name: 'Leadership & Mentoring')
+                    ],
+                    templateId: ResumeTemplateId.modern,
+                  );
+
+                  context.read<ResumeProvider>().loadDraft(mockReadyResume);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const BuilderFlowScreen()),
+                  );
                 },
                 icon: const Icon(Icons.lightbulb_outline),
                 label: const Text('USE SAMPLE PDF TO TEST'),
-              )
+              ),
             else
               Container(
                 padding: const EdgeInsets.all(AppSpacing.lg),

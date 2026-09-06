@@ -1,55 +1,53 @@
-# Implementation Plan - LinkedIn PDF Job Tailor
+# Implementation Plan - Ultra-Tailored AI Synthesis & PNG Export
 
-The goal is to update the "Advanced Job Tailor" feature to use the **LinkedIn Profile PDF** instead of a ZIP file. Users will upload their LinkedIn-exported PDF and provide a job description. The AI will then analyze the PDF directly to synthesis a professional, tailored resume.
+The goal is to significantly improve the AI's ability to create a "full ready resume" from a LinkedIn PDF and a job description. Additionally, I will add the ability to export the final resume as a high-quality PNG image.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Gemini Multimodal Power**: I will leverage Gemini 1.5's ability to read PDF documents directly. This means we don't need to manually extract text from the PDF, ensuring 100% accuracy in data retrieval.
+> **AI Prompt Engineering**: I will refactor the AI prompt to be much more aggressive and comprehensive. It will be instructed to act as a "Senior Recruitment Consultant" and build a resume that is 100% complete—not just a draft.
 
 > [!NOTE]
-> **Mock Mode**: In Mock Mode, the app will simulate the PDF processing and return a high-quality tailored resume instantly.
+> **PNG Export**: On Mobile/Desktop, I will use the `printing` package's `raster` capability to convert the PDF pages into high-quality images for local storage.
 
 ## Proposed Changes
 
-### 1. UI Adjustment
-Switching the file source from ZIP to PDF.
-
-#### [MODIFY] [advanced_import_screen.dart](file:///E:/resume_builder_app/lib/screens/linkedin/advanced_import_screen.dart)
-- Update `_pickFile` to filter for `.pdf` instead of `.zip`.
-- Update labels and icons to reflect "LinkedIn Profile PDF".
-
-#### [MODIFY] [linkedin_import_screen.dart](file:///E:/resume_builder_app/lib/screens/linkedin/linkedin_import_screen.dart)
-- Update description to mention the LinkedIn "Save to PDF" feature.
-
----
-
-### 2. Service Layer Refactoring
-Processing binary PDF data.
+### 1. AI Service Refactoring (The "Master Tailor" Prompt)
 
 #### [MODIFY] [ai_service.dart](file:///E:/resume_builder_app/lib/services/ai_service.dart)
-- Update `generateTailoredResume` to accept `Uint8List pdfBytes` instead of the CSV map.
-- Construct a multimodal prompt for Gemini:
-    - Input 1: The PDF bytes as a `DataPart`.
-    - Input 2: The text instructions including the job description.
-- Instruct Gemini to synthesize a full `Resume` object in JSON format.
-
-#### [MODIFY] [linkedin_import_service.dart](file:///E:/resume_builder_app/lib/services/linkedin_import_service.dart)
-- Remove ZIP/CSV parsing logic (as it's no longer needed).
-- PDF handling is now passed directly to the `AiService`.
+- Update `generateTailoredResume` prompt:
+    - **Instruction**: Synthesize a *final-ready* resume.
+    - **Optimization**: Analyze the job description for specific technical and soft skills.
+    - **Contextual Rewriting**: Map the LinkedIn history to the job requirements, rewriting every bullet point for maximum impact.
+    - **Completeness**: Ensure name, contact, summary, full experience history (tailored), education, and prioritized skills are all included.
 
 ---
 
-### 3. Dependency Cleanup
-Removing unnecessary ZIP/CSV tools to keep the app lightweight.
+### 2. PNG Export Integration
 
-#### [MODIFY] [pubspec.yaml](file:///E:/resume_builder_app/pubspec.yaml)
-- Remove `archive` and `csv`.
+#### [MODIFY] [pdf_export_service.dart](file:///E:/resume_builder_app/lib/services/pdf_export_service.dart)
+- Add `exportAsPng(Resume resume, {bool isLetter = true})` method.
+- Implementation: Generate the PDF document, then use `Printing.raster` to convert the first page (resumes are typically 1 page) into a PNG byte stream and save it to the user's device.
+
+---
+
+### 3. UI Enhancements (Download Options)
+
+#### [MODIFY] [resume_preview_screen.dart](file:///E:/resume_builder_app/lib/screens/templates/resume_preview_screen.dart)
+- Update the "Download" button to show a choice: **Download PDF** or **Download PNG**.
+- Ensure loading states are handled for both formats.
+
+---
+
+### 4. LinkedIn Logic Polish
+
+#### [MODIFY] [advanced_import_screen.dart](file:///E:/resume_builder_app/lib/screens/linkedin/advanced_import_screen.dart)
+- Update "Mock" data returned in `_generate` to be much more detailed, simulating the "full ready" experience for testing.
 
 ## Verification Plan
 
 ### Manual Verification
-1. **PDF Selection**: Verify the file picker correctly filters for `.pdf` files.
-2. **AI Synthesis**: Upload a real LinkedIn PDF and a job description; verify the AI generates a JSON resume that matches the role.
-3. **Mock Path**: Verify the Mock mode still provides a professional tailored experience.
-4. **Layout Check**: Ensure the resulting tailored resume opens correctly in the builder flow.
+1. **AI Synthesis**: Upload a PDF and a real job post. Verify the resulting builder draft is comprehensive (Summary is present, bullets are rewritten, skills are prioritized).
+2. **PDF Download**: Verify the PDF still downloads correctly to local storage.
+3. **PNG Download**: Tap "Download PNG" and verify a `.png` file appears in the device's gallery or downloads folder.
+4. **Content Quality**: Verify that the PNG is high-resolution and the text is perfectly legible.

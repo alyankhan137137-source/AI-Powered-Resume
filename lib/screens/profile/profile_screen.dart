@@ -13,6 +13,34 @@ import 'feedback_screen.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+  void _showEditNameDialog(BuildContext context, String currentName) {
+    final controller = TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Name'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(hintText: 'Enter your name'),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              final newName = controller.text.trim();
+              if (newName.isNotEmpty) {
+                await context.read<AuthProvider>().updateDisplayName(newName);
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showDeleteAccountDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -69,9 +97,20 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user?.displayName ?? '', 
-                        style: AppTypography.bodyStrong.copyWith(color: isDark ? Colors.white : AppColors.ink900),
-                        overflow: TextOverflow.ellipsis),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(user?.displayName ?? '', 
+                              style: AppTypography.bodyStrong.copyWith(color: isDark ? Colors.white : AppColors.ink900),
+                              overflow: TextOverflow.ellipsis),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 18, color: AppTheme.primaryPurple),
+                            onPressed: () => _showEditNameDialog(context, user?.displayName ?? ''),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
+                      ),
                       Text(user?.email ?? '', 
                         style: AppTypography.caption.copyWith(color: isDark ? Colors.white60 : AppColors.ink600),
                         overflow: TextOverflow.ellipsis),

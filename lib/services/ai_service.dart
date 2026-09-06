@@ -303,11 +303,20 @@ class AiService {
       Content.multi([
         DataPart('application/pdf', pdfBytes),
         TextPart(
-          'You are an expert resume writer. I have provided my official LinkedIn '
-          'Profile PDF. Please synthesize a professional resume from this data '
-          'that is highly tailored to the following job description. '
-          'Rewrite bullet points to highlight matching achievements. '
-          'Return ONLY a JSON object matching the Resume model schema.\n\n'
+          'You are a Senior Executive Recruitment Consultant and Master Resume Writer. '
+          'I have provided my official LinkedIn Profile PDF as the source of my career history. '
+          'Your goal is to synthesize a 100% FINAL-READY, professional resume that is '
+          'perfectly tailored to the specific job description below.\n\n'
+          'CRITICAL INSTRUCTIONS:\n'
+          '1. ACTION-ORIENTED: Rewrite every experience bullet point to highlight '
+          'achievements that directly solve the pain points in the job description.\n'
+          '2. OPTIMIZED SUMMARY: Write a powerful 3-sentence professional summary '
+          'that positions the candidate as the ideal fit for this specific role.\n'
+          '3. PRIORITIZED SKILLS: Select and rank only the skills most relevant to the role.\n'
+          '4. COMPLETENESS: Do not return a partial draft. The output must be a complete, '
+          'polished resume including Name, Contact, Summary, Experience (fully detailed), '
+          'Education, and Skills.\n'
+          '5. FORMAT: Return ONLY a JSON object matching the app\'s Resume model schema.\n\n'
           'Target Job Description:\n$jobDescription',
         ),
       ])

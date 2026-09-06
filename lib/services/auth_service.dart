@@ -144,4 +144,12 @@ class AuthService {
     if (AppConfig.useMockMode) return;
     return FirebaseFirestore.instance.collection('users').doc(uid).update({'targetJobTitle': jobTitle});
   }
+
+  Future<void> updateDisplayName(String uid, String newName) async {
+    if (AppConfig.useMockMode) return;
+    await Future.wait([
+      FirebaseAuth.instance.currentUser!.updateDisplayName(newName),
+      FirebaseFirestore.instance.collection('users').doc(uid).update({'displayName': newName}),
+    ]);
+  }
 }
