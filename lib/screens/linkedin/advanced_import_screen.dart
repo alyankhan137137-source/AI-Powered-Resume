@@ -1,8 +1,11 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/resume_provider.dart';
+import '../../models/resume_model.dart';
+import '../../models/experience_model.dart';
+import '../../models/skill_model.dart';
+import '../../models/template_model.dart';
 import '../../widgets/common/app_scaffold.dart';
 import '../../widgets/common/primary_button.dart';
 import '../../widgets/common/app_text_field.dart';
@@ -180,7 +183,7 @@ class _AdvancedImportScreenState extends State<AdvancedImportScreen> {
                 },
                 icon: const Icon(Icons.lightbulb_outline),
                 label: const Text('USE SAMPLE PDF TO TEST'),
-              ),
+              )
             else
               Container(
                 padding: const EdgeInsets.all(AppSpacing.lg),

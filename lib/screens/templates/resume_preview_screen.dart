@@ -68,11 +68,12 @@ class _ResumePreviewScreenState extends State<ResumePreviewScreen> {
       ),
     );
 
-    if (format == null) return;
+    if (format == null || !mounted) return;
 
+    final resumeProvider = context.read<ResumeProvider>();
     setState(() => _downloading = true);
     try {
-      final resume = context.read<ResumeProvider>().draft!;
+      final resume = resumeProvider.draft!;
       if (format == 'pdf') {
         await _pdfService.downloadPdf(resume, isLetter: _isLetter);
       } else {
